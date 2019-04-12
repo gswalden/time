@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <title>Internet Time</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  body {
+    font-size: 4em;
+  }
+  </style>
+</head>
+
+<body>
+Day <span id="day"></span>
+<br>
+<span id="beats"></span> beats
+<script>    
+/*
+ * Date class extention
+ * v1.1.0, 2010-06-03
+ * Copyright: Paul Philippov, themactep@gmail.com
+ * Homepage: http://themactep.com/beats/js
+ * License: BSD
+ */
+
+// Date.toInternetTime(n)
+// Converts time to Swatch Internet Time format.
+// n - the number of digits after decimal point.
+Date.prototype.toInternetTime = function(n) {
+  var BeatInSeconds = 86.4;
+
+  var seconds = this.getUTCSeconds();
+  var minutes = this.getUTCMinutes();
+  var hours   = this.getUTCHours();
+  hours = (hours == 23) ? 0 : hours + 1;
+
+  var BielMeanTime = (hours * 60 + minutes) * 60 + seconds;
+  var beats = Math.abs(BielMeanTime / BeatInSeconds).toFixed(parseInt(n));
+
+  var length = (n > 0) ? 1 + n : 0;
+
+  return '@'.concat('000'.concat(beats).slice(beats.length - length));
+};
+
+// Date.getDayOfYear()
+// Returns the number of days from the beginning of year to the date.
+Date.prototype.getDayOfYear = function() {
+  var DayInSeconds = 86400000;
+  var BeginningOfYear = new Date(this.getFullYear(), 0, 1);
+  return Math.ceil((this - BeginningOfYear) / DayInSeconds);
+};
+
+setInterval(() => {
+  var dt = new Date();
+  var day = dt.getDayOfYear();
+  var beats = dt.toInternetTime();
+  
+  document.getElementById('day').innerHTML = day;
+  document.getElementById('beats').innerHTML = beats;
+}, 500);
+</script>
+</body>
+
+</html>
